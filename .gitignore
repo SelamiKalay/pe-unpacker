@@ -1,0 +1,18 @@
+# Visual Studio
+.vs/
+out/
+*.obj
+*.exe
+*.pdb
+*.ilk
+*.log
+*.user
+*.suo
+Debug/
+Release/
+x64/
+x86/
+build/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
