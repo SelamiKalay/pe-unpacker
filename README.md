@@ -9,8 +9,20 @@ yeniden oluşturur. Nesne yönelimli programlama dersi kapsamında geliştirilmi
 
 ## İşlem Hattı
 
-```
-PEParser → DebuggerEngine → Dumper → IATRebuilder → Diske yazma
+```mermaid
+flowchart TD
+    A["📦 Paketlenmiş .exe"] --> B["<b>PEParser</b><br/>Header ve section analizi"]
+    B --> C["<b>ProcessManager</b><br/>CREATE_SUSPENDED ile başlat"]
+    C --> D["<b>DebuggerEngine</b><br/>Debug döngüsü"]
+    D --> E{"OEP tespiti"}
+    E -->|"--bp-exec"| F["Donanım breakpoint<br/>Dr0–Dr3 / Dr7"]
+    E -->|"--page-guard"| G["PAGE_GUARD<br/>bellek koruması"]
+    F --> H["OEP bulundu<br/>süreç durduruldu"]
+    G --> H
+    H --> I["<b>Dumper</b><br/>ReadProcessMemory ile section'ları oku<br/>EntryPoint = OEP"]
+    I --> J["<b>IATRebuilder</b><br/>Yüklü modüllerin export tablolarını tara<br/>adres → DLL!Fonksiyon eşle"]
+    J --> K["Yeni import section'ı ekle"]
+    K --> L["✅ Açılmış .exe"]
 ```
 
 | Modül | Görev |
