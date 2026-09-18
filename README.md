@@ -1,5 +1,7 @@
 # PE Unpacker
 
+> **English:** A Windows PE unpacker built on the Win32 Debug API: runs a packed executable under a debugger, detects the original entry point (OEP) via hardware breakpoints or PAGE_GUARD, dumps the process memory and rebuilds the import address table. Console and native Win32 GUI front-ends (C++20).
+
 Paketlenmiş (packed) Windows PE çalıştırılabilir dosyalarını açmak için yazılmış,
 Win32 Debug API tabanlı bir unpacker. Hedef programı debugger altında çalıştırır,
 orijinal giriş noktasını (OEP) yakalar, bellekten dump alır ve import tablosunu
