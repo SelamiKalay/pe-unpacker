@@ -1,64 +1,64 @@
 # PE Unpacker
 
-> **English:** A Windows PE unpacker built on the Win32 Debug API: runs a packed executable under a debugger, detects the original entry point (OEP) via hardware breakpoints or PAGE_GUARD, dumps the process memory and rebuilds the import address table. Console and native Win32 GUI front-ends (C++20).
+**English** | [Türkçe](README.tr.md)
 
-Paketlenmiş (packed) Windows PE çalıştırılabilir dosyalarını açmak için yazılmış,
-Win32 Debug API tabanlı bir unpacker. Hedef programı debugger altında çalıştırır,
-orijinal giriş noktasını (OEP) yakalar, bellekten dump alır ve import tablosunu
-yeniden oluşturur. Nesne yönelimli programlama dersi kapsamında geliştirilmiştir.
+An unpacker for packed Windows PE executables, built on the Win32 Debug API. It runs
+the target program under a debugger, catches the original entry point (OEP), dumps
+the process memory and rebuilds the import table. Developed as part of an
+object-oriented programming course.
 
-## İşlem Hattı
+## Pipeline
 
 ```mermaid
 flowchart TD
-    A["📦 Paketlenmiş .exe"] --> B["<b>PEParser</b><br/>Header ve section analizi"]
-    B --> C["<b>ProcessManager</b><br/>CREATE_SUSPENDED ile başlat"]
-    C --> D["<b>DebuggerEngine</b><br/>Debug döngüsü"]
-    D --> E{"OEP tespiti"}
-    E -->|"--bp-exec"| F["Donanım breakpoint<br/>Dr0–Dr3 / Dr7"]
-    E -->|"--page-guard"| G["PAGE_GUARD<br/>bellek koruması"]
-    F --> H["OEP bulundu<br/>süreç durduruldu"]
+    A["📦 Packed .exe"] --> B["<b>PEParser</b><br/>Header and section analysis"]
+    B --> C["<b>ProcessManager</b><br/>Start with CREATE_SUSPENDED"]
+    C --> D["<b>DebuggerEngine</b><br/>Debug loop"]
+    D --> E{"OEP detection"}
+    E -->|"--bp-exec"| F["Hardware breakpoint<br/>Dr0–Dr3 / Dr7"]
+    E -->|"--page-guard"| G["PAGE_GUARD<br/>memory protection"]
+    F --> H["OEP found<br/>process suspended"]
     G --> H
-    H --> I["<b>Dumper</b><br/>ReadProcessMemory ile section'ları oku<br/>EntryPoint = OEP"]
-    I --> J["<b>IATRebuilder</b><br/>Yüklü modüllerin export tablolarını tara<br/>adres → DLL!Fonksiyon eşle"]
-    J --> K["Yeni import section'ı ekle"]
-    K --> L["✅ Açılmış .exe"]
+    H --> I["<b>Dumper</b><br/>Read sections via ReadProcessMemory<br/>EntryPoint = OEP"]
+    I --> J["<b>IATRebuilder</b><br/>Scan export tables of loaded modules<br/>map address → DLL!Function"]
+    J --> K["Append new import section"]
+    K --> L["✅ Unpacked .exe"]
 ```
 
-| Modül | Görev |
+| Module | Responsibility |
 |---|---|
-| `PEParser` | Girdi dosyasının statik analizi (header'lar, section'lar) |
-| `ProcessManager` | Hedef süreci `CREATE_SUSPENDED` ile başlatma ve yönetme |
-| `DebuggerEngine` | Debug döngüsü; donanım breakpoint'i veya PAGE_GUARD ile OEP tespiti |
-| `Dumper` | Section'ları bellekten okuma, PE header'ını güncelleme |
-| `IATRebuilder` | Import Address Table'ı yeni bir section'da yeniden inşa etme |
-| `MainWindow` | Native Win32 grafik arayüz |
+| `PEParser` | Static analysis of the input file (headers, sections) |
+| `ProcessManager` | Starts and manages the target process with `CREATE_SUSPENDED` |
+| `DebuggerEngine` | Debug loop; OEP detection via hardware breakpoints or PAGE_GUARD |
+| `Dumper` | Reads sections from memory and updates the PE header |
+| `IATRebuilder` | Rebuilds the Import Address Table in a new section |
+| `MainWindow` | Native Win32 graphical interface |
 
-`IUnpacker` soyut arayüzü sayesinde farklı OEP bulma stratejileri eklenebilir
-(Strategy pattern).
+The abstract `IUnpacker` interface allows different OEP-finding strategies to be
+plugged in (Strategy pattern).
 
-## Derleme
+## Building
 
-Windows + Visual Studio (MSVC) ve CMake 3.20+ gerekir.
+Requires Windows, Visual Studio (MSVC) and CMake 3.20+.
 
 ```bash
 cmake -B build
 cmake --build build --config Release
 ```
 
-İki çıktı üretilir: `unpacker.exe` (konsol) ve `unpacker_gui.exe` (grafik arayüz).
+Two executables are produced: `unpacker.exe` (console) and `unpacker_gui.exe` (GUI).
 
-## Kullanım
+## Usage
 
 ```
 unpacker.exe <input.exe> <output.exe>
-             [--bp-exec <VA>]              OEP için donanım execute breakpoint'i
-             [--page-guard <VA> <size>]    OEP için PAGE_GUARD izleme bölgesi
-             [--iat <VA> <size>]           IAT yeniden inşa bölgesi
+             [--bp-exec <VA>]              hardware execute breakpoint for the OEP
+             [--page-guard <VA> <size>]    PAGE_GUARD watch region for the OEP
+             [--iat <VA> <size>]           region for IAT reconstruction
 ```
 
-## Dokümantasyon
+## Documentation
 
-IEEE formatında proje raporu: [Türkçe](docs/Rapor_TR.pdf) · [English](docs/Report_EN.pdf)
+Project report in IEEE format: [English](docs/Report_EN.pdf) · [Türkçe](docs/Rapor_TR.pdf)
 
-> Bu araç eğitim ve tersine mühendislik çalışmaları amacıyla geliştirilmiştir.
+> This tool was developed for educational and reverse-engineering research purposes.
