@@ -1,0 +1,45 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  msvc:
+    name: MSVC ${{ matrix.arch }} ${{ matrix.config }}
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [x64, Win32]
+        config: [Debug, Release]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure
+        run: cmake -S . -B build -G "Visual Studio 17 2022" -A ${{ matrix.arch }} -DCMAKE_COMPILE_WARNING_AS_ERROR=ON
+
+      - name: Build
+        run: cmake --build build --config ${{ matrix.config }} --parallel
+
+      - name: Smoke test (usage, exit code 1)
+        shell: pwsh
+        run: |
+          $exe = "build/${{ matrix.config }}/unpacker.exe"
+          $out = & $exe 2>&1 | Out-String
+          Write-Output $out
+          if ($LASTEXITCODE -ne 1) { throw "Beklenen cikis kodu 1, alinan $LASTEXITCODE" }
+          if ($out -notmatch 'Kullanim') { throw "Kullanim metni yazdirilmadi" }
+          if (-not (Test-Path "build/${{ matrix.config }}/unpacker_gui.exe")) { throw "unpacker_gui.exe olusmadi" }
+          exit 0
+
+      - name: Upload binaries
+        if: matrix.config == 'Release'
+        uses: actions/upload-artifact@v4
+        with:
+          name: pe-unpacker-${{ matrix.arch }}
+          path: |
+            build/Release/unpacker.exe
+            build/Release/unpacker_gui.exe

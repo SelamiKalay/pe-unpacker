@@ -287,7 +287,7 @@ DWORD DebuggerEngine::HandleHardwareBreakpoint(DWORD threadId, std::uintptr_t ad
 // =============================================================================
 //  HandlePageGuard — sayfa korumasi tetiklendi → adres OEP adayi
 // =============================================================================
-DWORD DebuggerEngine::HandlePageGuard(DWORD threadId, std::uintptr_t faultAddr)
+DWORD DebuggerEngine::HandlePageGuard(DWORD /*threadId*/, std::uintptr_t faultAddr)
 {
     LOG_EVENT("PAGE_GUARD tetik: 0x{:X}", faultAddr);
 

@@ -42,3 +42,8 @@ target_link_libraries(unpacker_gui PRIVATE
     comdlg32
     shell32
 )
+
+# MinGW'de wWinMain giris noktasi icin
+if (MINGW)
+    target_link_options(unpacker_gui PRIVATE -municode)
+endif()

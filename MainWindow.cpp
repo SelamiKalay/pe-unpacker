@@ -74,15 +74,6 @@ static std::wstring Utf8ToWide(const std::string& s) {
     ::MultiByteToWideChar(CP_UTF8, 0, s.data(), (int)s.size(), w.data(), len);
     return w;
 }
-static std::string WideToUtf8(const std::wstring& w) {
-    if (w.empty()) return {};
-    const int len = ::WideCharToMultiByte(CP_UTF8, 0, w.data(), (int)w.size(),
-                                          nullptr, 0, nullptr, nullptr);
-    std::string s(len, '\0');
-    ::WideCharToMultiByte(CP_UTF8, 0, w.data(), (int)w.size(), s.data(), len,
-                          nullptr, nullptr);
-    return s;
-}
 
 // =============================================================================
 //  Pencere olusturma
