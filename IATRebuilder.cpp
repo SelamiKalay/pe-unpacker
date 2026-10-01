@@ -158,7 +158,7 @@ void IATRebuilder::CacheModuleExports(HMODULE hMod)
         moduleName.assign(buf);
         // küçük harfe çevir
         std::transform(moduleName.begin(), moduleName.end(), moduleName.begin(),
-                       [](unsigned char c){ return std::tolower(c); });
+                       [](unsigned char c){ return static_cast<char>(std::tolower(c)); });
     }
     if (moduleName.empty()) return;
 

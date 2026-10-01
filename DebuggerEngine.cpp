@@ -432,11 +432,11 @@ void DebuggerEngine::ApplyHardwareBreakpointsToThread(HANDLE hThread)
         EncodeDR7(dr7, i, bp.type, bp.length);
     }
 
-    ctx.Dr0 = drAddrs[0];
-    ctx.Dr1 = drAddrs[1];
-    ctx.Dr2 = drAddrs[2];
-    ctx.Dr3 = drAddrs[3];
-    ctx.Dr7 = dr7;
+    ctx.Dr0 = static_cast<DWORD_PTR>(drAddrs[0]);
+    ctx.Dr1 = static_cast<DWORD_PTR>(drAddrs[1]);
+    ctx.Dr2 = static_cast<DWORD_PTR>(drAddrs[2]);
+    ctx.Dr3 = static_cast<DWORD_PTR>(drAddrs[3]);
+    ctx.Dr7 = static_cast<DWORD_PTR>(dr7);
 
     if (!::SetThreadContext(hThread, &ctx))
         LOG_ERROR("SetThreadContext basarisiz (DR uygulamasi)");

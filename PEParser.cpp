@@ -131,7 +131,7 @@ void PEParser::PrintPEInfo() const
     std::cout << SEP << "\n"
               << std::format("  PE ANALIZ RAPORU : {}\n", m_filePath.filename().string())
               << std::format("  Dosya Boyutu     : {} byte ({:.2f} KB)\n",
-                    m_rawData.size(), m_rawData.size() / 1024.0)
+                    m_rawData.size(), static_cast<double>(m_rawData.size()) / 1024.0)
               << std::format("  Mimari           : {}\n", m_is64bit ? "PE32+ (64-bit)" : "PE32 (32-bit)")
               << SEP << "\n\n";
 
