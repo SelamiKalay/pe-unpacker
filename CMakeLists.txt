@@ -16,24 +16,24 @@ endif()
 
 # ── Ortak motor kaynak dosyalari (her iki hedef de paylasir) ────────────────
 set(ENGINE_SOURCES
-    PEParser.cpp
-    ProcessManager.cpp
-    DebuggerEngine.cpp
-    Dumper.cpp
-    IATRebuilder.cpp
+    src/PEParser.cpp
+    src/ProcessManager.cpp
+    src/DebuggerEngine.cpp
+    src/Dumper.cpp
+    src/IATRebuilder.cpp
 )
 
 # ── Konsol hedefi (orijinal CLI) ────────────────────────────────────────────
 add_executable(unpacker
-    main.cpp
+    src/main.cpp
     ${ENGINE_SOURCES}
 )
 target_link_libraries(unpacker PRIVATE psapi)
 
 # ── GUI hedefi (Win32 native pencere) ───────────────────────────────────────
 add_executable(unpacker_gui WIN32
-    gui_main.cpp
-    MainWindow.cpp
+    src/gui_main.cpp
+    src/MainWindow.cpp
     ${ENGINE_SOURCES}
 )
 target_link_libraries(unpacker_gui PRIVATE
